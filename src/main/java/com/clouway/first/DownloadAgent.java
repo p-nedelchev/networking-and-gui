@@ -22,9 +22,10 @@ public class DownloadAgent {
             InputStream in = connection.getInputStream();
             byte[] buffer = new byte[1024];
             int read;
-            if (! Files.exists(filePath)) {
-                Files.createFile(filePath);
+            if ( Files.exists(filePath)) {
+                Files.delete(filePath);
             }
+            Files.createFile(filePath);
             while ((read = in.read(buffer)) != -1) {
                 Files.write(filePath, Arrays.copyOf(buffer, read), StandardOpenOption.APPEND);
             }
