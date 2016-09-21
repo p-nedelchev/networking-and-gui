@@ -1,13 +1,11 @@
 package com.clouway.first;
 
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 
 /**
  * @author Petar Nedelchev <peter.krasimirov@gmail.com>
@@ -15,19 +13,15 @@ import java.util.Arrays;
 public class DownloadAgent {
 
 
-    public void downloadFile(URL fileLocation, Path filePath) {
+    public void downloadFile(URL fileLocation, OutputStream out) {
         URLConnection connection = null;
         try {
             connection = fileLocation.openConnection();
             InputStream in = connection.getInputStream();
-            byte[] buffer = new byte[1024];
-            int read;
-            if ( Files.exists(filePath)) {
-                Files.delete(filePath);
-            }
-            Files.createFile(filePath);
-            while ((read = in.read(buffer)) != -1) {
-                Files.write(filePath, Arrays.copyOf(buffer, read), StandardOpenOption.APPEND);
+            byte [] buffer = new byte[1024];
+            int readBytes;
+            while ((readBytes = in.read(buffer)) != -1) {
+                out.write(buffer, 0, readBytes);
             }
         } catch (IOException e) {
             e.printStackTrace();
