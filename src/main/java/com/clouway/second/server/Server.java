@@ -1,5 +1,9 @@
 package com.clouway.second.server;
 
+
+
+import com.clouway.second.CalendarUtil;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -11,12 +15,13 @@ import java.util.Calendar;
  */
 public class Server implements Runnable {
     private int port;
+    private CalendarUtil calendarUtil;
     private boolean flag;
     private ServerSocket server = null;
-    private String lastSentMessage;
 
-    public Server(int port) {
+    public Server(int port, CalendarUtil calendarUtil) {
         this.port = port;
+        this.calendarUtil = calendarUtil;
         this.flag = true;
     }
 
@@ -40,13 +45,11 @@ public class Server implements Runnable {
     }
 
     private void sendMessage (Socket client) {
-        lastSentMessage = "Hello! " + Calendar.getInstance().getTime().toString();
-        synchronized (this) {
-            try (OutputStream out = client.getOutputStream()) {
-                out.write(lastSentMessage.getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        String sentMessage = "Hello! " + calendarUtil.timeNow();
+        try (OutputStream out = client.getOutputStream()) {
+            out.write(sentMessage.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -54,7 +57,4 @@ public class Server implements Runnable {
         this.flag = false;
     }
 
-    public String getLastMessage() {
-        return this.lastSentMessage;
-    }
 }

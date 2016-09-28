@@ -1,7 +1,9 @@
 package com.clouway.second.client;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -13,6 +15,7 @@ public class Client implements Runnable {
     private Socket client;
     private InetAddress address;
     private boolean flag;
+    private String lastReceivedMessage;
 
 
     public Client (InetAddress address, int port) {
@@ -29,35 +32,37 @@ public class Client implements Runnable {
             e.printStackTrace();
         }
         while (flag) {
-            receiveMessage(client);
+            lastReceivedMessage = receiveMessage(client);
             stop();
         }
     }
 
-    private void receiveMessage(Socket client) {
-        synchronized (this) {
+    private String receiveMessage(Socket client) {
+            String lastMessage = "";
             try (InputStream in = client.getInputStream()) {
-                byte[] buffer = new byte[1024];
-                int count;
-                while ((count = in.read(buffer)) != -1) {
-                    System.out.println("Server said: " + new String(buffer, 0, count));
-                }
-                in.close();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                lastMessage = reader.readLine();
+                System.out.println(lastMessage);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+            return lastMessage;
+
     }
 
     private void stop() {
         this.flag = false;
         try {
-            this.client.close();
+            if(client != null) {
+                this.client.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Connection closed. Client is closing...");
     }
 
-
+    public String getLastReceivedMessage() {
+        return lastReceivedMessage;
+    }
 }
