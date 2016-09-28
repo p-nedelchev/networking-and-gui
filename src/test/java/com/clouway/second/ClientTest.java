@@ -30,7 +30,7 @@ public class ClientTest {
         address = InetAddress.getByName("127.0.0.1");
         client = new Client(address, 15000);
         messageSentByServer = "Hello! ";
-        fakeServer = new FakeServer(15000, messageSentByServer, new CalendarUtil() {
+        CalendarUtil calendarUtil = new CalendarUtil() {
             @Override
             public String timeNow() {
                 Calendar calendar = Calendar.getInstance();
@@ -39,14 +39,15 @@ public class ClientTest {
                 messageSentByServer += time.toString();
                 return time.toString();
             }
-        });
+        };
+        fakeServer = new FakeServer(15000, messageSentByServer, calendarUtil);
     }
 
     @Test
     public void happyPath() throws Exception {
         new Thread(client).start();
         fakeServer.sendMessage();
-        String expectedMessage = client.getLastReceivedMessage();
-        assertThat(messageSentByServer, is(expectedMessage));
+        String actualMessage = client.getLastReceivedMessage();
+        assertThat(messageSentByServer, is(actualMessage));
     }
 }

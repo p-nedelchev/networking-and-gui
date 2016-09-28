@@ -26,7 +26,7 @@ public class ServerTest {
     @Before
     public void setUp() throws Exception {
         localhost = InetAddress.getByName("127.0.0.1");
-        server = new Server(15000, new CalendarUtil() {
+        CalendarUtil calendarUtil = new CalendarUtil() {
             @Override
             public String timeNow() {
                 Calendar calendar = Calendar.getInstance();
@@ -34,7 +34,8 @@ public class ServerTest {
                 time = calendar.getTime();
                 return time.toString();
             }
-        });
+        };
+        server = new Server(15000, calendarUtil);
         fakeClient = new FakeClient(15000, localhost);
         new Thread(server).start();
     }
