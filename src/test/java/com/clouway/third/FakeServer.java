@@ -35,21 +35,14 @@ public class FakeServer implements Runnable{
                 BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String messageToClient = "Hello client";
                 output.write(messageToClient);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            messageFromClient = reader.readLine();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-                queue.put("new");
+                while (flag) {
+                    messageFromClient = reader.readLine();
+                    queue.put("new");
+                }
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+            }catch(IOException | InterruptedException e){
+                e.printStackTrace();
+            }
     }
 
     public String getMessage() {
@@ -58,6 +51,7 @@ public class FakeServer implements Runnable{
 
     public void stop() {
         try {
+            flag = false;
             server.close();
         } catch (IOException e) {
             e.printStackTrace();

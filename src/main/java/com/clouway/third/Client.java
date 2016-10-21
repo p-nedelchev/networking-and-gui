@@ -18,6 +18,7 @@ public class Client implements Runnable {
     private InputStream in = null;
     private BufferedReader reader = null;
     private InputStream input;
+    private String receivedMessage;
 
 
 
@@ -54,9 +55,8 @@ public class Client implements Runnable {
             public void run() {
                 while (flag) {
                     try {
-                        String line ;
-                        while((line = reader.readLine()) != null) {
-                            System.out.println(line);
+                        while((receivedMessage = reader.readLine()) != null) {
+                            System.out.println(receivedMessage);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -66,7 +66,7 @@ public class Client implements Runnable {
         }).start();
     }
 
-    private void stop() {
+    public void stop() {
         this.flag = false;
         try {
             if(client != null) {
@@ -80,6 +80,10 @@ public class Client implements Runnable {
 
     public void setInput(InputStream input) {
         this.input = input;
+    }
+
+    public String getReceivedMessage() {
+        return receivedMessage;
     }
 }
 
